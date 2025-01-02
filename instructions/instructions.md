@@ -1,56 +1,82 @@
-# Project overview
-You are building a Reddit analytics platform, where users can get analytics of different sub reddits, where they can see top contents and see category of posts;
+# Product Requirements Document (PRD) for Reddit Analytics Platform
 
-### Technology Stack:
-- NextJS 14
-- Shadcn 
-- Tailwind css 
-- Lucid icons
+## Project Overview
+You are building a Reddit analytics platform, where users can get analytics of different subreddits. The platform allows users to:
+- View top content from subreddits.
+- Analyze categories of posts (e.g., solution requests, advice requests, etc.).
 
-Here is the updated text with the missing details added:
+### Technology Stack
+- **Next.js 14**
+- **Shadcn** (UI components)
+- **Tailwind CSS** (styling)
+- **Lucid Icons** (iconography)
+- **Snoowrap** (Reddit API interaction)
+- **OpenAI API** (for post categorization)
 
----
+## Core Functionalities
 
-# Core functionalities  
+### 1. **See List of Available Subreddits & Add New Subreddits**
+- **Display Existing Subreddits:**
+  - Users can see a list of already-created subreddits displayed as cards.
+  - Example subreddits: `ollama`, `openai`.
+- **Add New Subreddit:**
+  - Users can click an “Add Subreddit” button.
+  - A modal should appear where users can paste a Reddit URL.
+  - After submission, a new card should be added dynamically to the list.
 
-1. **See list of available subreddits & add new subreddits**  
-    - Users can see a list of available subreddits that already created, displayed in cards, common ones like "ollama", "openai"  
-    - Users can click on an add subreddit button, which should open a modal for users to paste in a Reddit URL and add  
-    - After users add a new subreddit, a new card should be added  
+### 2. **Subreddit Page**
+- **Navigation:**
+  - Clicking on a subreddit card navigates to a dedicated subreddit page.
+- **Tabs:**
+  - The page includes two tabs:
+    1. **Top Posts**
+    2. **Themes**
 
-2. **Subreddit page**  
-    1. Clicking on each subreddit should go to a Reddit page  
-    2. With 2 tabs: "Top posts", "Themes"  
+### 3. **Fetch Reddit Posts Data in "Top Posts"**
+- **Requirements:**
+  - Display fetched Reddit posts from the past 24 hours.
+  - Use the **Snoowrap** library to interact with the Reddit API.
+- **Data Fields for Each Post:**
+  - Title
+  - Score
+  - Content
+  - URL
+  - Created UTC (date and time)
+  - Number of comments
+- **UI Layout:**
+  - Display posts in a sortable table component (default sort: highest score).
 
-3. **Fetch Reddit posts data in "Top posts"**  
-    - Under "Top posts" page, we want to display fetched Reddit posts from the past 24 hours  
-    - We will use snoowrap as the library to fetch Reddit data  
-    - Each post including title, score, content, URL, created_utc, num_comments  
-    - Display the subreddits in a table component, sorted based on the number of scores  
+### 4. **Analyze Reddit Posts Data in "Themes"**
+- **Categorization:**
+  - For each post, send data to OpenAI API for categorization.
+  - Categories:
+    1. **Solution Requests:** Posts where users seek solutions to problems.
+    2. **Pain & Anger:** Posts expressing pain or frustration.
+    3. **Advice Requests:** Posts seeking advice.
+    4. **Money Talk:** Posts discussing finances.
+- **Concurrency:**
+  - Run the categorization process concurrently for faster results.
+- **UI Layout:**
+  - Display each category as a card with:
+    - Title
+    - Description
+    - Number of posts in the category
+  - Clicking on a card opens a side panel displaying all posts within that category.
 
-4. **Analyze Reddit posts data in "Themes"**  
-    1. For each post, we should send post data to OpenAI using structured output to categorize posts into:  
-        - "Solution requests": Posts where people are seeking solutions for problems  
-        - "Pain & anger": Posts where people are expressing pain or anger  
-        - "Advice requests": Posts where people are seeking advice  
-        - "Money talk": Posts where people are talking about spending money  
-    2. This process needs to be run concurrently for posts, so it will be faster  
-    3. In the "Themes" page, we should display each category as a card, with title, description, and the number of counts  
-    4. Clicking on the card will open a side panel to display all posts under this category  
+### 5. **Ability to Add New Cards**
+- **Add Card Functionality:**
+  - Users can add new cards dynamically to the platform.
+- **Trigger Analysis:**
+  - Adding a card triggers the analysis process again.
 
-5. **Ability to add new cards**  
-    1. Users should be able to add a new card  
-    2. After a new card is added, it should trigger the analysis again  
+## Example Code and Documentation
 
---- 
+### Snoowrap Configuration
+Example code for configuring Snoowrap to fetch Reddit posts:
 
-# Doc
-### Documentation of how to use Snoowrap to fetch Reddit posts data
-CODE EXAMPLE:
-```
+```javascript
 import Snoowrap from 'snoowrap';
 
-// Configure Snoowrap with your Reddit API credentials
 const r = new Snoowrap({
   userAgent: 'your user-agent',
   clientId: 'your client id',
@@ -60,37 +86,80 @@ const r = new Snoowrap({
 
 async function fetchPosts() {
   try {
-    // Fetch posts from the 'ollama' subreddit from the past 24 hours
     const posts = await r.getSubreddit('ollama').getNew({ time: 'day' });
-
-    // Extract and log the required details for each post
-    posts.forEach(post => {
-      console.log({
-        title: post.title,
-        content: post.selftext,
-        score: post.score,
-        num_comments: post.num_comments,
-        date: new Date(post.created_utc * 1000)
-      });
-    });
+    return posts.map(post => ({
+      title: post.title,
+      content: post.selftext,
+      score: post.score,
+      num_comments: post.num_comments,
+      date: new Date(post.created_utc * 1000),
+      url: post.url
+    }));
   } catch (error) {
     console.error('Error fetching posts:', error);
   }
 }
-
-fetchPosts();
-
 ```
 
-# Current file structure
-To get the file structure of all files inside `D:\Users\DevPC4\ant\Reddit-Analytics-Platform\reddit`, you can use the `tree` package in the terminal. Here is how you can do it:
+### Example API Response
+Response from the Snoowrap API when fetching posts:
 
-1. Open your terminal.
-2. Navigate to the `D:\Users\DevPC4\ant\Reddit-Analytics-Platform\reddit` directory:
-    ```sh
-    cd D:\Users\DevPC4\ant\Reddit-Analytics-Platform\reddit
-    ```
-3. Run the `tree` command to display the file structure:
-    ```sh
-    tree
-    ```
+```json
+[
+  {
+    "title": "Example Post Title",
+    "content": "This is the content of the post.",
+    "score": 123,
+    "num_comments": 45,
+    "date": "2025-01-01T12:00:00Z",
+    "url": "https://reddit.com/r/example/comments/abc123"
+  }
+]
+```
+
+## File Structure
+To ensure alignment, here is the file structure for this project:
+
+```plaintext
+reddit-analytics-platform/
+├── public/                     # Static assets
+│   ├── icons/                  # Lucid icons
+│   └── favicon.ico             # App favicon
+├── src/                        # Source code
+│   ├── components/             # Reusable components
+│   │   ├── Navbar.js           # Navigation bar
+│   │   ├── SubredditCard.js    # Subreddit card component
+│   │   ├── PostsTable.js       # Table for posts
+│   │   └── Sidebar.js          # Side panel for "Themes"
+│   ├── pages/                  # Next.js pages
+│   │   ├── index.js            # Home page
+│   │   ├── subreddit/[id].js   # Dynamic subreddit page
+│   │   └── api/                # API handlers
+│   │       ├── fetchPosts.js   # Fetch Reddit posts
+│   │       └── analyzePosts.js # Analyze posts using OpenAI
+│   ├── styles/                 # Stylesheets
+│   │   └── globals.css         # Tailwind CSS styles
+│   ├── utils/                  # Utility functions
+│   │   ├── fetchReddit.js      # Reddit API wrapper functions
+│   │   └── categorizePosts.js  # Post categorization logic
+│   ├── hooks/                  # Custom hooks
+│   │   └── useFetch.js         # Data fetching hook
+│   ├── contexts/               # Global state management
+│   │   └── SubredditContext.js # Subreddit state context
+│   └── app/                    # Next.js app configuration
+│       └── _app.js             # Global setup
+├── .env                        # Environment variables
+├── package.json                # Project dependencies
+├── tailwind.config.js          # Tailwind configuration
+├── next.config.js              # Next.js configuration
+└── README.md                   # Documentation
+```
+
+### Documentation Details
+- Include examples of expected API requests and responses (see above).
+- Provide a clear explanation of how each major component interacts (e.g., how "Themes" uses OpenAI for analysis).
+- Ensure code snippets are accessible in the `README.md` for developer reference.
+
+---
+This PRD provides clear alignment for the development team by specifying the scope, technology stack, functionality, and necessary documentation to ensure smooth implementation.
+
