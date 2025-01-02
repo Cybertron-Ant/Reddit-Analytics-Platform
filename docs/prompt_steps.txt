@@ -1,0 +1,42 @@
+I'm building a web app using Next.js for reddit posts, what is the best package to use?
+https://www.npmjs.com/package/snoowrap
+
+@Snoowrap Help me build a simple typescript file of fetching reddit posts data from past 24 hours under 'ollama', including title, content, score, num comments, date using Snoowrap, and create the file
+
+https://platform.openai.com/docs/guides/structured-outputs/examples
+help me write a simple typescript to categorise reddit posts, it should have output 'PostCategoryAnalysis', where it has boolean(true/false) value for each category below:
+1. Solution requests: Posts where people are seeking solutions for problems.
+2. Pain & anger: Posts where people are expressing pain or anger.
+3. Advice requests: Posts where people are seeking advice.
+4. Money talk: Posts where people are talking about spending money.
+
+I want you to use the openai structured output instead, use the example above as reference to refactor the code.
+
+Also, I want you to set the description of each category to the zod model PostCategoryAnalysisSchema itself instead of part of a prompt, so later it will be more flexible if categories change
+
+npx shadcn@latest init
+
+npx shadcn@latest add
+
+get project file structure:
+npm install tree
+tree -L 2 -I 'node_modules|.git'
+tree /A /F | findstr /V "node_modules build"
+
+
+prompt(copy and paste contents of intructions.md):
+above is the project I want to build, how do I structure my project files?(Try to create as few files as possible)
+
+prompt:
+help me by adding details to the original PRD that give clear alignment to developers who will implement this project;
+
+- don't create actual code
+- including file structure into the code
+- including of documentations provided (with both example code and responses, those are important context)
+
+prompt:
+help me convert this to markdown
+
+
+Let's build a reddit analytics platform based on @instructions.md ;
+Let's first build "1.1 View Available Subreddits"
